@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JADUAL WAKTU GURU SJKC NAN HWA</title>
+    <style>
+        /* Base and Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            width: 100vw;
+            height: 100vh;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Lock to full screen */
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            body {
+                padding: 0;
+                overflow: visible;
+            }
+        }
+
+        /* Header Layout */
+        .header-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 5px;
+            flex-shrink: 0;
+        }
+
+        .logo-box {
+            width: 80px;
+            height: 90px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .main-title {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .subtitle-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .teacher-name {
+            font-size: 20px;
+            font-weight: bold;
+            padding-right: 10px;
+        }
+
+        /* Timetable Grid */
+        .timetable-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        table.timetable {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            border: 3px solid #000;
+            table-layout: fixed;
+        }
+
+        table.timetable th, 
+        table.timetable td {
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        /* Thick inner borders for separation */
+        table.timetable th {
+            border-bottom: 2px solid #000;
+            padding: 4px;
+        }
+
+        table.timetable th:first-child,
+        table.timetable td:first-child {
+            border-right: 2px solid #000;
+        }
+
+        /* Column styles */
+        .col-day { width: 11%; }
+        .col-period { width: 8.5%; }
+        .col-rehat { width: 4%; }
+
+        /* Typography within table */
+        .time-header {
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        
+        .time-header .period-num {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .sjkc-label {
+            font-size: 8px;
+            text-align: left;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+        }
+
+        .day-label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .subject {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .class-label {
+            position: absolute;
+            bottom: 3px;
+            right: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .rehat-cell {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 20px;
+            font-weight: normal;
+            letter-spacing: 5px;
+            border-left: 2px solid #000 !important;
+            border-right: 2px solid #000 !important;
+        }
+
+        /* Footer Text directly below grid */
+        .under-table-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            margin-top: 2px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Bottom Section (Summary + Signature) */
+        .bottom-section {
+            display: flex;
+            align-items: flex-start;
+            flex-shrink: 0;
+        }
+
+        table.summary-table {
+            border-collapse: collapse;
+            border: 2px solid #000;
+            width: 60%;
+            font-size: 14px;
+        }
+
+        table.summary-table th, 
+        table.summary-table td {
+            border: 1px solid #000;
+            padding: 3px 6px;
+            text-align: left;
+            height: 18px;
+        }
+
+        table.summary-table th {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        table.summary-table td:not(:first-child) {
+            text-align: left;
+        }
+
+        .total-cell {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .signature-box {
+            margin-left: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            padding-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header-container">
+        <div class="logo-box">
+            <!-- Professional inline SVG replicating a school crest/logo aesthetic -->
+            <svg width="80" height="90" viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 5 10 L 75 10 L 75 50 C 75 75 40 85 40 85 C 40 85 5 75 5 50 Z" fill="#4A90E2" stroke="#000" stroke-width="2"/>
+                <path d="M 10 15 L 70 15 L 70 45 L 10 45 Z" fill="#F6C85F" stroke="#000" stroke-width="1"/>
+                <text x="40" y="38" font-family="sans-serif" font-size="22" font-weight="bold" fill="#000" text-anchor="middle">南华</text>
+            </svg>
+        </div>
+        <div class="header-content">
+            <div class="main-title">JADUAL WAKTU GURU SJKC NAN HWA 教师个人时间表</div>
+            <div class="subtitle-row">
+                <div class="subtitle-left">
+                    <div>KALI KEDUA (第二次)</div>
+                    <div>BERKUATKUASA MULAI:30/03/2026</div>
+                </div>
+                <div class="teacher-name">CIK ONG YI RONG 王艺蓉师</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Timetable Grid -->
+    <div class="timetable-wrapper">
+        <table class="timetable">
+            <colgroup>
+                <col class="col-day">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-rehat">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+                <col class="col-period">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>
+                        <span class="sjkc-label">SJKC NAN HWA</span>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">1</div>7:30 - 8:00</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">2</div>8:00 - 8:30</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">3</div>8:30 - 9:00</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">4</div>9:00 - 9:30</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">5</div>9:30 - 10:00</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div style="margin-top: 15px;">10:00 - 10:20</div></div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">6</div>10:20 - 10:50</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">7</div>10:50 - 11:20</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">8</div>11:20 - 11:50</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">9</div>11:50 - 12:20</div>
+                    </th>
+                    <th>
+                        <div class="time-header"><div class="period-num">10</div>12:20 - 13:05</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Monday -->
+                <tr>
+                    <td class="day-label">ISN星期一</td>
+                    <td>
+                        <span class="subject">PH周会</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td colspan="2">
+                        <span class="subject">BC华文</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td rowspan="5" class="rehat-cell">REHAT 休息</td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td></td>
+                </tr>
+                <!-- Tuesday -->
+                <tr>
+                    <td class="day-label">SEL星期二</td>
+                    <td>
+                        <span class="subject">PJ体育</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td>
+                        <span class="subject">PK健教</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td></td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">4M</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <span class="subject">BC华文</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                </tr>
+                <!-- Wednesday -->
+                <tr>
+                    <td class="day-label">RAB星期三</td>
+                    <td colspan="2">
+                        <span class="subject">PA道伊</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td></td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">4M</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <span class="subject">BC华文</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                </tr>
+                <!-- Thursday -->
+                <tr>
+                    <td class="day-label">KHA星期四</td>
+                    <td colspan="2">
+                        <span class="subject">1M1S</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td>
+                        <span class="subject">PJ体育</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        <span class="subject">BC华文</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">2M</span>
+                    </td>
+                    <td></td>
+                </tr>
+                <!-- Friday -->
+                <tr>
+                    <td class="day-label">JUM星期五</td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        <span class="subject" style="color: #e3241b;">BC华文</span>
+                        <span class="class-label" style="color: #e3241b;">6M</span>
+                    </td>
+                    <td>
+                        <span class="subject">PA道伊</span>
+                        <span class="class-label">6M</span>
+                    </td>
+                    <td colspan="2">
+                        <span class="subject">BI英文</span>
+                        <span class="class-label">4M</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Small footer texts -->
+    <div class="under-table-text">
+        <span>Timetable generated:3/25/2026</span>
+        <span>aSc Timetables</span>
+    </div>
+
+    <!-- Bottom Summary Table and Signature -->
+    <div class="bottom-section">
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Subjek 科目</th>
+                    <th>Kelas 班级</th>
+                    <th>Kali 次数</th>
+                    <th>Waktu 节</th>
+                    <th>Jumlah 共</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>英文</td><td>2M</td><td>3</td><td>2</td><td>6</td></tr>
+                <tr><td>英文</td><td>4M</td><td>3</td><td>2</td><td>6</td></tr>
+                <tr><td>体育</td><td>2M</td><td>2</td><td>1</td><td>2</td></tr>
+                <tr><td>健康教育</td><td>2M</td><td>1</td><td>1</td><td>1</td></tr>
+                <tr><td>周会</td><td>6M</td><td>1</td><td>1</td><td>1</td></tr>
+                <tr><td>1学生1运动</td><td>6M</td><td>1</td><td>2</td><td>2</td></tr>
+                <tr><td>华文</td><td>6M</td><td>3</td><td>2</td><td>6</td></tr>
+                <tr><td>华文</td><td>6M</td><td>2</td><td>1</td><td>2</td></tr>
+                <tr><td>道德教育//伊教</td><td>6M</td><td>1</td><td>2</td><td>2</td></tr>
+                <tr><td>道德教育//伊教</td><td>6M</td><td>1</td><td>1</td><td>1</td></tr>
+                <tr>
+                    <td colspan="4" style="border-left: none; border-bottom: none;"></td>
+                    <td class="total-cell">29</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="signature-box">
+            Disahkan Oleh:
+        </div>
+    </div>
+
+</body>
+</html>
